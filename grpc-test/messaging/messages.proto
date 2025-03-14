@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "imesh.ai/grpc-test/messages";
+
+package messages;
+
+service Messaging {
+  rpc BasicRequestReply (BasicMessage) returns (BasicMessage) {}
+}
+
+message BasicMessage {
+  string message = 1;
+}
