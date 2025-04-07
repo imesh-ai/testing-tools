@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grpc-test-client
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-test-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grpc-test-client
+  template:
+    metadata:
+      labels:
+        app: grpc-test-client
+    spec:
+      terminationGracePeriodSeconds: 0
+      serviceAccountName: grpc-test-client
+      containers:
+      - name: grpc-test-client
+        image: imeshpulak/grpc-test-client:1.0.0
+        command: ["/client"]
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SERVER_ADDRESS
+          value: grpc-test-server:8080
+        - name: CLIENT_MESSAGE
+          value: "hello from client"
+        - name: CLIENT_INTERVAL
+          value: 1s
+        - name: CLIENT_TIMEOUT
+          value: "4"
+        - name: CLIENT_MAX_REQ
+          value: "0"
+---

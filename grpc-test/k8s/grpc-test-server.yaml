@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grpc-test-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpc-test-server
+  labels:
+    app: grpc-test-server
+    service: grpc-test-server
+spec:
+  ports:
+  - port: 8080
+    name: grpc
+  selector:
+    app: grpc-test-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-test-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grpc-test-server
+  template:
+    metadata:
+      labels:
+        app: grpc-test-server
+    spec:
+      terminationGracePeriodSeconds: 0
+      serviceAccountName: grpc-test-server
+      containers:
+      - name: grpc-test-server
+        image: imeshpulak/grpc-test-server:1.0.0
+        command: ["/server"]
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "8080"
+        - name: REPLY
+          value: "hello from server"
+---
